@@ -6,6 +6,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 from aiogram import F
+from DB_quiz import quiz_data
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
@@ -20,35 +21,7 @@ dp = Dispatcher()
 
 # Зададим имя базы данных
 DB_NAME = 'quiz_bot.db'
-
-
-# Структура квиза
-quiz_data = [
-    {
-        'question': 'Что такое Python?',
-        'options': ['Язык программирования', 'Тип данных', 'Музыкальный инструмент', 'Змея на английском'],
-        'correct_option': 0
-    },
-    {
-        'question': 'Какой тип данных используется для хранения целых чисел?',
-        'options': ['int', 'float', 'str', 'natural'],
-        'correct_option': 0
-    },
-    {
-        'question': 'Какой то вопрос?',
-        'options': ['В', 'С', 'B', 'A'],
-        'correct_option': 3
-    },
-{
-        'question': 'Надо ли все вопросы считывать с csv файла, для удобства редактирования?',
-        'options': ['да', 'нет'],
-        'correct_option': 0
-    },
-    # Добавьте другие вопросы
-]
-
-
-
+#------------------------------------------------------------------------#генераатор клавы
 def generate_options_keyboard(answer_options, right_answer):
     builder = InlineKeyboardBuilder()
 
@@ -60,7 +33,7 @@ def generate_options_keyboard(answer_options, right_answer):
 
     builder.adjust(1)
     return builder.as_markup()
-
+#------------------------------------------------------------------------#обработка правильного ответа
 
 @dp.callback_query(F.data == "right_answer")
 async def right_answer(callback: types.CallbackQuery):
@@ -83,7 +56,7 @@ async def right_answer(callback: types.CallbackQuery):
     else:
         await callback.message.answer("Это был последний вопрос. Квиз завершен!")
 
-
+#------------------------------------------------------------------------#обработка неправильного ответа
 @dp.callback_query(F.data == "wrong_answer")
 async def wrong_answer(callback: types.CallbackQuery):
     await callback.bot.edit_message_reply_markup(
